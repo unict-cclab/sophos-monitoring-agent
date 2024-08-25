@@ -19,6 +19,14 @@ public interface TelemetryService {
         Uni<Double> getAppMemoryUsage(@QueryParam("app-group") String appGroupName, @QueryParam("app") String appName, @QueryParam("range-width") String rangeWidth);
 
         @GET
+        @Path("/metrics/apps/network-usage")
+        Uni<Double> getAppNetworkBandwidthUsage(@QueryParam("app-group") String appGroupName, @QueryParam("app") String appName, @QueryParam("range-width") String rangeWidth);
+
+        @GET
+        @Path("/metrics/apps/disk-usage")
+        Uni<Double> getAppDiskBandwidthUsage(@QueryParam("app-group") String appGroupName, @QueryParam("app") String appName, @QueryParam("range-width") String rangeWidth);
+
+        @GET
         @Path("/metrics/apps/rps")
         Uni<Map<String, Double>> getAppRequestsPerSecond(@QueryParam("app-group") String appGroupName, @QueryParam("app") String appName, @QueryParam("range-width") String rangeWidth);
 
@@ -33,6 +41,14 @@ public interface TelemetryService {
         @GET
         @Path("/metrics/nodes/memory-usage")
         Uni<Double> getNodeMemoryUsage(@QueryParam("node") String node, @QueryParam("range-width") String rangeWidth);
+
+        @GET
+        @Path("/metrics/nodes/network-usage")
+        Uni<Double> getNodeNetworkBandwidthUsage(@QueryParam("node") String node, @QueryParam("range-width") String rangeWidth);
+
+        @GET
+        @Path("/metrics/nodes/disk-usage")
+        Uni<Double> getNodeDiskBandwidthUsage(@QueryParam("node") String node, @QueryParam("range-width") String rangeWidth);
 
         @GET
         @Path("/metrics/nodes/latencies")

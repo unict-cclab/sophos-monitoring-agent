@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.Reconciler;
@@ -38,21 +39,10 @@ public class AppGroupReconciler implements Reconciler<AppGroup> {
   public UpdateControl<AppGroup> reconcile(AppGroup resource, Context context) {
     log.info("Reconciling app group {}", resource.getSpec().getName());
 
-    List<Pod> pods = client.pods().inNamespace(resource.getSpec().getNamespace())
-    .withLabel("app-group", resource.getSpec().getName()).list().getItems();
+    List<Deployment> deployments = client.apps().deployments().inNamespace(resource.getSpec().getNamespace())
+      .withLabel("app-group", resource.getSpec().getName()).list().getItems();
 
-    Map<String, List<Pod>> podsMap = new HashMap<>();
-
-    pods.forEach(pod -> {
-      String appName = pod.getMetadata().getLabels().get("app");
-      if (!podsMap.containsKey(appName)) {
-        podsMap.put(appName, new ArrayList<>());
-      }
-      podsMap.get(appName).add(pod);
-    });
-
-    AppGroupGraph appGroupGraph = appGroupGraphBuilder.buildAppGroupGraph(resource.getSpec().getName(), podsMap,
-        resource.getSpec().getMetricsRangeWidth());
+    AppGroupGraph appGroupGraph = appGroupGraphBuilder.buildAppGroupGraph(resource.getSpec().getName(), deployments, resource.getSpec().getMetricsRangeWidth());
 
     if (resource.getSpec().isResourceMonitorEnabled()) {
       log.info("Updating resource params for app group {}", resource.getSpec().getName());
@@ -65,10 +55,9 @@ public class AppGroupReconciler implements Reconciler<AppGroup> {
     }
 
     appGroupGraph.getApps().forEach(app -> {
-      app.getPods().forEach(pod -> {
-        client.pods().inNamespace(pod.getMetadata().getNamespace())
-          .withName(pod.getMetadata().getName()).patch(pod);
-      });
+      Deployment deployment = app.getDeployment();
+      client.apps().deployments().inNamespace(deployment.getMetadata().getNamespace())
+        .withName(deployment.getMetadata().getName()).patch(deployment);
     });
 
     return UpdateControl.<AppGroup>noUpdate().rescheduleAfter(resource.getSpec().getRunPeriod(), TimeUnit.SECONDS);

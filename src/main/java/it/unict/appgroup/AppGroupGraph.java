@@ -5,8 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 
 public class AppGroupGraph {
     private final List<App> apps;
@@ -19,7 +18,7 @@ public class AppGroupGraph {
         return apps;
     }
 
-    public void addApp(List<Pod> pods, double cpuUsage, double memoryUsage, Map<String, Double> rps, Map<String, Double> traffic) {
+    public void addApp(Deployment deployment, double cpuUsage, double memoryUsage, double networkBandwidthUsage, double diskBandwidthUsage, Map<String, Double> rps, Map<String, Double> traffic) {
         Set<String> keySet = new HashSet<>(rps.keySet());
         keySet.addAll(traffic.keySet());
 
@@ -43,6 +42,6 @@ public class AppGroupGraph {
             channels.add(new Channel(key, channelRps, channelTraffic));
         }
 
-        apps.add(new App(pods, cpuUsage, memoryUsage, channels));
+        apps.add(new App(deployment, cpuUsage, memoryUsage, networkBandwidthUsage, diskBandwidthUsage, channels));
     }
 }
