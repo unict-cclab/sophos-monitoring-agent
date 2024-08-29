@@ -18,10 +18,10 @@ public class ClusterGraph {
         return clusterNodes;
     }
 
-    public void addClusterNode(Node node, String clusterNodeName, double cpuUsage, double memoryUsage, Map<String, Double> latencies) {
+    public void addClusterNode(Node node, String clusterNodeName, double cpuUsage, double memoryUsage, double networkBandwidthUsage, double diskBandwidthUsage, Map<String, Double> latencies) {
         List<Link> links = latencies.entrySet().stream().map((entry) -> new Link(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
-        clusterNodes.add(new ClusterNode(node, clusterNodeName, cpuUsage, memoryUsage, links));
+        clusterNodes.add(new ClusterNode(node, clusterNodeName, cpuUsage, memoryUsage, networkBandwidthUsage, diskBandwidthUsage, links));
     }
 }

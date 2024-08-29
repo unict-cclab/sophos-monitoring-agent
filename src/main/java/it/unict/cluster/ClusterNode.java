@@ -15,13 +15,19 @@ public class ClusterNode {
 
     private final double memoryUsage;
 
+    private final double networkBandwidthUsage;
+
+    private final double diskBandwidthUsage;
+
     private final List<Link> links;
 
-    public ClusterNode(Node node, String name, double cpuUsage, double memoryUsage, List<Link> links) {
+    public ClusterNode(Node node, String name, double cpuUsage, double memoryUsage, double networkBandwidthUsage, double diskBandwidthUsage, List<Link> links) {
         this.node = node;
         this.name = name;
         this.cpuUsage = cpuUsage;
         this.memoryUsage = memoryUsage;
+        this.networkBandwidthUsage = networkBandwidthUsage;
+        this.diskBandwidthUsage = diskBandwidthUsage;
         this.links = links;
     }
 
@@ -39,6 +45,14 @@ public class ClusterNode {
 
     public double getMemoryUsage() {
         return memoryUsage;
+    }
+
+    public double getNetworkBandwidthUsage() {
+        return networkBandwidthUsage;
+    }
+
+    public double getDiskBandwidthUsage() {
+        return diskBandwidthUsage;
     }
 
     public Map<String, Double> getLatencies() {

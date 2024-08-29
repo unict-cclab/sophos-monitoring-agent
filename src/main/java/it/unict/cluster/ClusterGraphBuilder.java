@@ -44,6 +44,22 @@ public class ClusterGraphBuilder {
                 log.info(e.getMessage());
             }
 
+            double networkBandwidthUsage = 0.0;
+            try {
+                networkBandwidthUsage = telemetryService.getNodeNetworkBandwidthUsage(clusterNodeName, metricsRangeWidth).await()
+                        .indefinitely();
+            } catch (Exception e) {
+                log.info(e.getMessage());
+            }
+
+            double diskBandwidthUsage = 0.0;
+            try {
+                diskBandwidthUsage = telemetryService.getNodeDiskBandwidthUsage(clusterNodeName, metricsRangeWidth).await()
+                        .indefinitely();
+            } catch (Exception e) {
+                log.info(e.getMessage());
+            }
+
             Map<String, Double> latencies = new HashMap<>();
             try {
                 latencies = telemetryService.getNodeLatencies(clusterNodeName, metricsRangeWidth).await()
@@ -52,7 +68,7 @@ public class ClusterGraphBuilder {
                 log.info(e.getMessage());
             }
 
-            clusterGraph.addClusterNode(node, clusterNodeName, cpuUsage, memoryUsage, latencies);
+            clusterGraph.addClusterNode(node, clusterNodeName, cpuUsage, memoryUsage, networkBandwidthUsage, diskBandwidthUsage, latencies);
         });
 
         return clusterGraph;
